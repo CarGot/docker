@@ -1,1 +1,1 @@
-docker build -t henfri/owfs ./
+docker build -t cargot/owfs ./

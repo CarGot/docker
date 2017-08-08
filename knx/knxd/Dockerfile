@@ -2,7 +2,7 @@
 # 
 #
 FROM debian:jessie
-MAINTAINER Hendrik Friedel hendrik@friedels.name
+MAINTAINER Carsten Gotschlich carsten@gotschlich.de
 RUN apt-get -y update
 RUN apt-get -y install git-core build-essential debhelper autotools-dev autoconf automake libtool \
                        libusb-1.0-0-dev  pkg-config base-files  base-files libev-dev  \

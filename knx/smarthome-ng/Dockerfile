@@ -2,7 +2,7 @@
 # 
 #
 FROM debian:jessie
-MAINTAINER Hendrik Friedel hendrik@friedels.name
+MAINTAINER Carsten Gotschlich carsten@gotschlich.de
 
 ENV DEBIAN_FRONTEND noninteractive
 ADD ./files/run.sh /usr/local/bin/run.sh
