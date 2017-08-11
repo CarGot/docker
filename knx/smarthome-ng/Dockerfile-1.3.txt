@@ -30,7 +30,8 @@ RUN apt-get -y install -y build-essential git dialog openntpd python3 python3-de
 
 RUN cd /usr/local && \ 
     git clone git://github.com/CarGot/smarthome.git -b master --single-branch && \
-    mkdir -p /usr/local/smarthome/var/run/ && \
+    cd /usr/local/smarthome && \
+    git clone git://github.com/smarthomeNG/plugins.git -b v1.3 --single-branch && \
     chown -R smarthome:smarthome /usr/local/smarthome && \
     chmod +x /usr/local/smarthome/bin/smarthome.py && \
     cd /usr/local/smarthome/requirements && \ 
