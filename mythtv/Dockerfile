@@ -57,7 +57,8 @@ x11vnc \
 xvfb \
 gtk2-engines-murrine \
 ttf-ubuntu-font-family \
-supervisor && \
+supervisor \
+autofs  && \
 
 # install xrdp
 apt-get install \
