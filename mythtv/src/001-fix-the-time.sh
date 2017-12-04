@@ -1,4 +1,6 @@
 #!/bin/bash
+export TZ="Europe/Berlin"
+
 if [[ $(cat /etc/timezone) != $TZ ]] ; then
 echo "$TZ" > /etc/timezone
 sed -i -e "s#;date.timezone.*#date.timezone = ${TZ}#g" /etc/php5/apache2/php.ini
