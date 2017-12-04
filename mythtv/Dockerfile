@@ -22,6 +22,8 @@ RUN ln -s -f /bin/true /usr/bin/chfn && \
 
 # Set the locale
 locale-gen de_DE.UTF-8 && \
+# Set timezone (cgo)
+cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
 
 
 # mv startup file(s) and make executable

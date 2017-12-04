@@ -8,6 +8,8 @@ services:
                 image: cargot/sparkly-mythtv
                 #                name: mythtv
                 network_mode: host
+                volumes:
+                        - ../../dockervolumes/mythtv/db:/db
                 ports:
                         - 3310:3310
                         - 3390:3389

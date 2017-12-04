@@ -1,25 +1,19 @@
 version: '2.2'
 
 services:
-    smarthome-ng:
+
+services:
+    origsmarthome:
         build:
-            context: ./smarthome-ng
-            dockerfile: Dockerfile-1.3.txt 
+            context: ./origsmarthome
+            dockerfile: Dockerfile-1.3.txt
         image: cargot/smarthome-ng:latest
 #       depends-on:
 #           - knxd
         volumes:
-            - ../../dockervolumes/shng-configs/etc:/usr/local/smarthome/etc
-            - ../../dockervolumes/shng-configs/items:/usr/local/smarthome/items
-            - ../../dockervolumes/shng-configs/logics:/usr/local/smarthome/logics
-            - ../../dockervolumes/shng-configs/scenes:/usr/local/smarthome/scenes
-            - ../../dockervolumes/shng-configs/scripts:/usr/local/smarthome/scripts
-            - ../../dockervolumes/shng-configs/tools:/usr/local/smarthome/tools
-            - ../../dockervolumes/shng-configs/var:/usr/local/smarthome/var
-#           - ../../dockervolumes/shng-configs/dev:/usr/local/smarthome/dev
-#           - /dev/ttyUSB1:/dev/ttyUSB1
+            - ../../dockervolumes/origSmarthome:/opt/smarthome
         privileged: true
-        ports: 
+        ports:
             - "2323:2323"
             - "2424:2424"
             - "2788:2788"
@@ -28,10 +22,43 @@ services:
 #       stop_grace_period: 1m
         networks:
           - smarthome
-        command: "/usr/local/smarthome/bin/smarthome.py -i"
+        command: "/opt/smarthome/bin/smarthome.py -i"
         restart: always
 #       stdin_open: true
 #       tty: true
+
+
+#    smarthome-ng:
+#        build:
+#            context: ./smarthome-ng
+#            dockerfile: Dockerfile-1.3.txt 
+#        image: cargot/smarthome-ng:latest
+##       depends-on:
+##           - knxd
+#        volumes:
+#            - ../../dockervolumes/shng-configs/etc:/usr/local/smarthome/etc
+#            - ../../dockervolumes/shng-configs/items:/usr/local/smarthome/items
+#            - ../../dockervolumes/shng-configs/logics:/usr/local/smarthome/logics
+#            - ../../dockervolumes/shng-configs/scenes:/usr/local/smarthome/scenes
+#            - ../../dockervolumes/shng-configs/scripts:/usr/local/smarthome/scripts
+#            - ../../dockervolumes/shng-configs/tools:/usr/local/smarthome/tools
+#            - ../../dockervolumes/shng-configs/var:/usr/local/smarthome/var
+#            - ../../dockervolumes/shng-configs/dev:/usr/local/smarthome/dev
+##           - /dev/ttyUSB1:/dev/ttyUSB1
+#        privileged: true
+#        ports: 
+#            - "2323:2323"
+#            - "2424:2424"
+#            - "2788:2788"
+#            - "8383:8383"
+#            - "9010:9010"
+##       stop_grace_period: 1m
+#        networks:
+#            - smarthome
+#        command: "/usr/local/smarthome/bin/smarthome.py -i"
+#        restart: always
+##       stdin_open: true
+##       tty: true
 
  
   
@@ -43,51 +70,54 @@ services:
         ports: 
             - "4720:4720"
             - "6720:6720"
-#            - "3671/udp:3671/udp"
+            - "3671:3671/udp"
+        devices:
+            - /dev/ttyACM0:/dev/ttyACM0
+        privileged: true
         networks: 
             - smarthome
 #        command: knxd -e 0.0.1 -E 0.0.2:8 -DTRS -c -i --send-delay=120 -B single -b ipt:192.168.0.60
-        command: knxd -e 0.0.1 -E 0.0.2:8 -DTRS -c -i -B single -b ipt:192.168.0.60
+#       for logging puposes:
+#       command: knxd -t1023 -e 0.0.1 -E 0.0.2:100 -D -T -R -S -c -i --tpuarts-ack-all-group -b tpuarts:/dev/ttyACM0
+        command: knxd -e 0.0.1 -E 0.0.2:30 -D -T -R -S -c -i --tpuarts-ack-all-group -b tpuarts:/dev/ttyACM0
         restart: always
 
-    owfs:
-        build: 
-            context: ./owfs
+
+    owserver:
+        build:
+            context: ./owserver
             dockerfile: Dockerfile
-        image: cargot/owfs
-        devices:
-            - /dev/ttyUSB0:/dev/ttyUSB0
+        image: cargot/owserver
+        volumes: 
+            - ../../dockervolumes/owserver/owfs:/etc/owfs
+            - /dev/bus/usb:/dev/bus/usb
         ports:
             - "4304:4304"
+            - "3001:2121"
         privileged: true
         networks:
-          - smarthome
-        #  command: /usr/bin/supervisord
+            - smarthome
 #       command: /usr/sbin/owserver -p 0.0.0.0:4304 --pbm=/dev/ttyUSB0 --error_level=0 --error_print=2 --foreground > /dev/null 2>&1 #/dev/PBM  -uall -uscan  
-        command: /bin/sh -c "/usr/sbin/owserver -p 0.0.0.0:4304 --pbm=/dev/ttyUSB0 & while true;  do sleep 120; done"
+        command: /bin/sh -c "/usr/bin/owhttpd -c /etc/owfs/owfs.conf & /usr/bin/owserver -c /etc/owfs/owfs.conf --foreground"
         restart: always
 
 
-
-    smartvisu28:
-        image: richarvey/nginx-php-fpm
-        volumes:
-                - ../../dockervolumes/smartvisu2.8:/var/www/html
-        ports: 
-            - 8080:80
-        restart: always
-
-
+#    smartvisu28:
+#        image: richarvey/nginx-php-fpm
+#        volumes:
+#            - ../../dockervolumes/smartvisu28:/var/www/html
+#        ports: 
+#            - 8088:80
+#        restart: always
 
     smartvisu27:
         image: richarvey/nginx-php-fpm
         volumes:
-                - ../../dockervolumes/smartvisu2.8:/var/www/html
+#            - ../../dockervolumes/smartvisu2.8:/var/www/html
+            - ../../dockervolumes/origSmartvisu27:/var/www/html/smartvisu
         ports: 
-            - 8080:80
+            - 80:80
         restart: always
-
-
 
 networks:
     smarthome:

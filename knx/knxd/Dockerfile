@@ -18,4 +18,5 @@ RUN git clone https://github.com/knxd/knxd.git && cd knxd && git checkout tags/v
 ##### NOTE AND README ######
 #start this container with --net=host instead of binding ports
 
-CMD ["knxd", "-e 0.0.1", "-E 0.0.2:8", "-DTRS", "-c", "-i", "--send-delay=70", "-B single", "-b ipt:192.168.177.24"]
+## orig: CMD ["knxd", "-e 0.0.1", "-E 0.0.2:8", "-DTRS", "-c", "-i", "--send-delay=70", "-B single", "-b ip:192.168.0.60"]
+CMD ["knxd", "-e 0.0.1", "-E 0.0.2:8", "-DTRS", "-c", "-i", "-b ipt:192.168.0.60"]
